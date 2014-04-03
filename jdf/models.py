@@ -22,13 +22,14 @@ class Place(models.Model):
     class Meta :
         managed = False
         db_table= 'place'
+        unique_together = ('osm_id', 'class_field')
 
 class Phonetique(models.Model):
-    id = models.IntegerField(null=False, primary_key=True)
     nom = models.TextField()
     #osm_id = models.IntegerField()
     osm = models.ForeignKey(Place)
     poids = models.IntegerField()
+    ville = models.CharField(max_length=200)
     
     class Meta :
         managed = False

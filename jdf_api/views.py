@@ -76,10 +76,11 @@ def search_place_name(request, place_name):
             # Encodage phonetique
             mot = soundex_fr.soundex_fr()
             phonetique = mot.analyse( nom_phonem.decode('latin-1') )
-            
-            res = Phonetique.objects.filter( nom__startswith=phonetique ).distinct("nom","poids").order_by('poids','nom')
-    
-                
+                        
+            res = Phonetique.objects\
+                .filter( nom__startswith=phonetique )\
+                .order_by('nom','poids')\
+                .distinct('poids','nom')
             
     except Place.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)

@@ -9,7 +9,7 @@ class PlaceSerializer(serializers.ModelSerializer):
         many = kwargs.pop('many', True)
         super(PlaceSerializer, self).__init__(many=many, *args, **kwargs)
     """
-    phonetic = serializers.RelatedField(many=True)
+    #phonetic = serializers.RelatedField(many=False)
     
     class Meta:
         model = Place
@@ -21,5 +21,5 @@ class PhonetiqueSerializer(serializers.ModelSerializer):
     
     class Meta :
         model = Phonetique
-        fields = ('nom','poids')
+        fields = ('nom','poids', 'ville','osm')
         
