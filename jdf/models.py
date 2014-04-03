@@ -35,4 +35,4 @@ class Phonetique(models.Model):
         db_table ='phonetique'
         
     def __unicode__(self):
-        return '%d, %s, %s' % (self.poids, self.nom, self.osm)
+        return '%d, %s' % (self.poids, self.nom)

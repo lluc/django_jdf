@@ -78,7 +78,7 @@ def search_place_name(request, place_name):
             phonetique = mot.analyse( nom_phonem.decode('latin-1') )
             
             res = Phonetique.objects.filter( nom__startswith=phonetique ).distinct("nom","poids").order_by('poids','nom')
-            
+            print "OK"
     
                 
             
@@ -86,5 +86,5 @@ def search_place_name(request, place_name):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = PhonetiqueSerializer(res)
+        serializer = PhonetiqueSerializer(res, many=True)
         return Response(serializer.data)
