@@ -10,7 +10,7 @@ from django.db import connection
 from jdf.models import Place, Phonetique
 from jdf_api.serializers import PlaceSerializer, PhonetiqueSerializer
 from jdf_tools import semantique
-from jdf_tools.soundex_fr import soundex_fr
+from jdf_tools.python_soundex_fr import soundex_fr
 
 
 @api_view(['GET'])

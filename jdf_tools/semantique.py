@@ -2,7 +2,6 @@
 # -*- encoding: utf8 -*-
 
 import pyparsing as pp
-import soundex_fr as sfr
 import re
 
 class semantique :
