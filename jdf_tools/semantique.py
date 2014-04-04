@@ -71,7 +71,6 @@ class semantique :
         """
         
         phrase = self.abbreviation( phrase )
-        print phrase
         
         # Tests
         #-------
@@ -86,7 +85,30 @@ class semantique :
             # C'est une station
             return resStation
         
-        return None
+        return self.parserDefaut( phrase )
+        
+    
+    def parserDefaut(self,phrase) :
+        """
+        Parser par défaut.
+        Tronçonner les différents mots.
+        """
+        # Initialisation des résultats
+        result = {}
+        
+        # Définir la grammaire
+        nom = pp.Group( pp.OneOrMore( pp.Word(self.alphas_fr) ) + pp.Suppress(self.sep))
+        defaut = pp.Optional(nom, default="")  + self.cp + self.ville
+        
+        # Découper la phrase
+        jetons = defaut.parseString( phrase )
+        result["nom"] = jetons[0]
+        result["cp"] = jetons[1]
+        result["ville"] = jetons[2]
+        result["type"] = "poi"
+
+        return result
+        
     
     def parserAdresse(self, phrase) :
         """
@@ -123,7 +145,6 @@ class semantique :
         # Utiliser cette grammaire pour décomposer une adresse
         adresse = pp.Optional( numero, default="##" ) + pp.Optional( pp.Suppress(self.sep) ) +\
             voie + pp.Optional(nom, default="")  + self.cp + self.ville
-        print phrase
             
         try:
             # Détecter si la phrase correspond à un motif d'adresse
@@ -159,7 +180,7 @@ class semantique :
         
         # Définir la grammaire d'une station
         station_type = pp.oneOf( stations )
-        nom = pp.Group( pp.OneOrMore( pp.Word( pp.alphas ) ) + pp.Suppress(self.sep))
+        nom = pp.Group( pp.OneOrMore( pp.Word( self.alphas_fr ) ) + pp.Suppress(self.sep))
         
         # Utiliser cette grammaire pour décomposer le nom d'une station
         station = station_type + pp.Optional(nom, default="")  + self.cp + self.ville
@@ -205,7 +226,9 @@ if __name__ == '__main__':
     print s.analyser( "Gare Montparnasse")
     print s.analyser( "Gare Montparnasse, Paris")
     print s.analyser( "clos" )
-    print s.analyser( "all hector" )
+    print s.analyser( "allée hector" )
+    print s.analyser( "Jules Verne" )
+    print s.analyser( "Jules Verne, nantes" )
     
     
 
