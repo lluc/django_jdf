@@ -17,6 +17,8 @@ class semantique :
         """
         Remplacer les abréviations communes
         """
+        phrase = phrase.encode('latin-1')
+        
         # Remplacer les symboles
         for w in ['-',';',':','\'','.'] :
             phrase = phrase.replace(w,' ')
@@ -55,7 +57,8 @@ class semantique :
             ]
         
         for d in dico :
-            phrase = re.sub(r'\s[*|^]'+d[0]+'\s+',d[1],phrase)
+            #phrase = re.sub(r'\s[*|^]'+d[0]+'\s+',d[1],phrase)
+            phrase = phrase.replace( d[0]+" ", d[1])
         
         return phrase
     
@@ -68,6 +71,7 @@ class semantique :
         """
         
         phrase = self.abbreviation( phrase )
+        print phrase
         
         # Tests
         #-------
@@ -119,6 +123,7 @@ class semantique :
         # Utiliser cette grammaire pour décomposer une adresse
         adresse = pp.Optional( numero, default="##" ) + pp.Optional( pp.Suppress(self.sep) ) +\
             voie + pp.Optional(nom, default="")  + self.cp + self.ville
+        print phrase
             
         try:
             # Détecter si la phrase correspond à un motif d'adresse
@@ -200,6 +205,7 @@ if __name__ == '__main__':
     print s.analyser( "Gare Montparnasse")
     print s.analyser( "Gare Montparnasse, Paris")
     print s.analyser( "clos" )
+    print s.analyser( "all hector" )
     
     
 

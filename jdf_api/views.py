@@ -78,7 +78,7 @@ def search_place_name(request, place_name):
             phonetique = mot.analyse( nom_phonem.decode('latin-1') )
                         
             res = Phonetique.objects\
-                .filter( nom__startswith=phonetique )\
+                .filter( nom__startswith=phonetique, poids__lt=100 )\
                 .order_by('nom','poids')\
                 .distinct('poids','nom')
             
