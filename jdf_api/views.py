@@ -73,7 +73,6 @@ def search_place_name(request, place_name):
             nom_phonem = ""
             for item in composants["nom"] :
                 nom_phonem = nom_phonem + item
-            print composants
                 
             # Encodage phonetique
             mot = soundex_fr.soundex_fr()

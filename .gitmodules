@@ -1,4 +1,3 @@
-
 [submodule "jdf_tools/python_soundex_fr"]
 	path = jdf_tools/python_soundex_fr
-	url = git://github.com/lluc/python_soundex_fr
+	url = https://github.com/lluc/python_soundex_fr.git
