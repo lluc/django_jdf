@@ -30,6 +30,7 @@ class Phonetique(models.Model):
     osm = models.ForeignKey(Place)
     poids = models.IntegerField()
     ville = models.CharField(max_length=200)
+    semantic = models.CharField(max_length=25)
     
     class Meta :
         managed = False

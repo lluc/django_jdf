@@ -75,15 +75,15 @@ class semantique :
         # Tests
         #-------
         
-        resAdresse = self.parserAdresse( phrase )
-        if resAdresse["nom"] != "" :
-            # C'est une adresse
-            return resAdresse
-        
         resStation = self.parserStation( phrase )
         if resStation["nom"] != "" :
             # C'est une station
             return resStation
+        
+        resAdresse = self.parserAdresse( phrase )
+        if resAdresse["nom"] != "" :
+            # C'est une adresse
+            return resAdresse
         
         return self.parserDefaut( phrase )
         
@@ -169,8 +169,9 @@ class semantique :
         """
         Reconnaissance des éléments d'un arrêt de transports en commun
         """
+        
+        # Termes se référant à une notion de station
         stations = [
-            "station",
             "arrêt",
             "gare"
             ]
@@ -188,6 +189,7 @@ class semantique :
         try:
             # Détecter si la phrase correspond à un motif de station
             jetons = station.parseString( phrase )
+            test_station = True
             result["station"] = jetons[0]
             result["nom"] = jetons[1]
             result["cp"] = jetons[2]
@@ -200,6 +202,7 @@ class semantique :
             result["cp"] = ""
             result["ville"] = ""
             result["type"] = ""
+            
         return result
 
 

@@ -21,5 +21,5 @@ class PhonetiqueSerializer(serializers.ModelSerializer):
     
     class Meta :
         model = Phonetique
-        fields = ('nom','poids', 'ville','osm')
+        fields = ('nom','poids', 'ville','semantic','osm')
         

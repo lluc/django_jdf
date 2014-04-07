@@ -62,23 +62,27 @@ def search_place_name(request, place_name):
     
     try:
         
-        # Detecter les elements de la phrase
+        # Analyser les elements de la phrase
+        #  et les charger dans la structure composants.
         s = semantique.semantique()
         composants = s.analyser(place_name)
 
-        # Si l element est nomme ...
+        # Si la structure existe ...
         if composants :
             # ... concatener les éléments du nom
             nom_phonem = ""
             for item in composants["nom"] :
                 nom_phonem = nom_phonem + item
+            print composants
                 
             # Encodage phonetique
             mot = soundex_fr.soundex_fr()
             phonetique = mot.analyse( nom_phonem.decode('latin-1') )
-                        
+            
+            # Ne garder que les noms phonétiques qui correspondent ainsi
+            #  que les types similaires
             res = Phonetique.objects\
-                .filter( nom__startswith=phonetique, poids__lt=100 )\
+                .filter( nom__startswith=phonetique )\
                 .order_by('nom','poids')\
                 .distinct('poids','nom')
             
