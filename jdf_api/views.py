@@ -45,7 +45,9 @@ def place_name(request, place_name):
 
 
 def dictfetchall(cursor):
-    "Returns all rows from a cursor as a dict"
+    """
+    Returns all rows from a cursor as a dict
+    """
     desc = cursor.description
     return [
         dict(zip([col[0] for col in desc], row))
@@ -59,7 +61,7 @@ def search_place_name(request, place_name):
         Search a place, using a phonetic search with the name
     """
     res = []
-    
+    cursor = connection.cursor()
     try:
         
         # Analyser les elements de la phrase
@@ -78,16 +80,34 @@ def search_place_name(request, place_name):
             mot = soundex_fr.soundex_fr()
             phonetique = mot.analyse( nom_phonem.decode('latin-1') )
             
-            # Ne garder que les noms phonétiques qui correspondent ainsi
-            #  que les types similaires
-            res = Phonetique.objects\
-                .filter( nom__startswith=phonetique )\
-                .order_by('nom','poids')\
-                .distinct('poids','nom')
+            # Ne garder que les noms phonétiques qui correspondent
+            # au type voulu (champ 'semantic')
+            requete = """
+            SELECT
+                DISTINCT ph.nom, 
+                ph.poids, 
+                pl.class, 
+                pl.type, 
+                ph.ville, 
+                ph.semantic, 
+                pl.name->'name' AS libelle 
+            FROM 
+                phonetique AS ph,
+                place AS pl 
+            WHERE 
+                ph.nom LIKE %s AND 
+                pl.osm_id = ph.osm_id AND
+                ph.semantic LIKE %s
+            ORDER BY 
+                ph.nom, 
+                ph.poids
+            """
+            cursor.execute( requete,[ phonetique+"%", composants["type"] ] )
+            
+            
             
     except Place.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = PhonetiqueSerializer(res, many=True)
-        return Response(serializer.data)
+        return Response(dictfetchall(cursor))
