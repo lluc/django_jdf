@@ -62,6 +62,7 @@ def search_place_name(request, place_name):
     """
     res = []
     cursor = connection.cursor()
+
     try:
         
         # Analyser les elements de la phrase
@@ -102,6 +103,7 @@ def search_place_name(request, place_name):
                 ph.nom, 
                 ph.poids
             """
+
             cursor.execute( requete,[ phonetique+"%", composants["type"] ] )
             
             
