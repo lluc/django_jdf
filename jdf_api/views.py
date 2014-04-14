@@ -6,11 +6,18 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db import connection
+import logging
 
 from jdf.models import Place, Phonetique
 from jdf_api.serializers import PlaceSerializer, PhonetiqueSerializer
 from jdf_tools import semantique
 from jdf_tools.python_soundex_fr import soundex_fr
+
+
+FORMAT = '%(asctime)-15s %(module)s %(message)s'
+logging.basicConfig(format=FORMAT)
+# Get an instance of a logger
+logger = logging.getLogger("recherches")
 
 
 @api_view(['GET'])
@@ -62,6 +69,9 @@ def search_place_name(request, place_name):
     """
     res = []
     cursor = connection.cursor()
+    
+    logger.info("-----------------------------------")
+    logger.info("place : "+place_name)
 
     try:
         
@@ -80,6 +90,7 @@ def search_place_name(request, place_name):
             # Encodage phonetique
             mot = soundex_fr.soundex_fr()
             phonetique = mot.analyse( nom_phonem.decode('latin-1') )
+            logger.info("phonetique : " + phonetique )
             
             # Ne garder que les noms phonétiques qui correspondent
             # au type voulu (champ 'semantic')
@@ -96,20 +107,32 @@ def search_place_name(request, place_name):
                 phonetique AS ph,
                 place AS pl 
             WHERE 
-                ph.nom LIKE %s AND 
+                ph.nom LIKE '%s' AND 
                 pl.osm_id = ph.osm_id AND
-                ph.semantic LIKE %s
+                ph.semantic LIKE '%s'
             ORDER BY 
                 ph.nom, 
                 ph.poids
             """
-
-            cursor.execute( requete,[ phonetique+"%", composants["type"] ] )
+            # Formater correctement la requête
+            requete = requete.replace("\n","")
+            requete = ' '.join(requete.split())
+            # Substituer les variables connues
+            requete = requete % (phonetique+"%", composants["type"])
+            
+            logger.info("requete : " + requete )
+            
+            # Exécuter la requête
+            cursor.execute( requete )
             
             
             
     except Place.DoesNotExist:
+        logger.info("404")
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        return Response(dictfetchall(cursor))
+        donnees = dictfetchall(cursor)
+        logger.info("reponse : ")
+        logger.info(donnees)
+        return Response(donnees)
