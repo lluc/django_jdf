@@ -57,8 +57,7 @@ class semantique :
             ]
         
         for d in dico :
-            #phrase = re.sub(r'\s[*|^]'+d[0]+'\s+',d[1],phrase)
-            phrase = phrase.replace( d[0]+" ", d[1])
+            phrase = re.sub(r'\b'+d[0]+'\s+', d[1],phrase)
         
         return phrase
     
