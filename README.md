@@ -29,6 +29,58 @@ La base *Nominatim* n'est pas altérée. On lui adjoint seulement une table *pho
 
 Lors d'une recherche, *Django_jdf* renvoie une réponse au format JSON. C'est cette réponse qui pourra être utilisée dans une saisie avec auto-complétion.
 
+## Installation
+
+### Sources
+
+Récupérer les sources sur Github :
+
+       git clone --recursive  https://github.com/lluc/django_jdf.git
+
+### Dépendances
+
+Pour installer les modules Django utilisés dans ce projet, consulter le fichier *requirements.txt". Il est possible d'installer automatiquement ces modules, en utilisant une commande du type :
+
+	 pip install -r requirements.txt
+
+### Paramètres
+
+Il n'y a pas de fichier *settings.py* ( dans le répertoire *django_jdf* ).  A la place, on utilise le fichier *local_settings.py*. On appelle ce fichier en modifiant le source de *manage.py*, avec cette ligne :
+
+      os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_jdf.local_settings") 
+
+Suivant la situation (développement ou production) on fait appel à l'un de ces deux fichiers :  *devel_settings.py* ou *prod_settings.py*. L'appel  se fait au sein de *local_settings.py* au travers de ce type de commande :
+
+- pour les paramètres de développement :
+
+                       from devel_settings import *
+
+- pour les paramètres de production :
+
+                       from prod_settings import *
+
+Le fichier *prod_settings.py* pourrait être de la forme suivante :
+
+
+	DEBUG = False
+
+	ADMINS = (
+	    # ('Your Name', 'your_email@example.com'),
+	)
+
+	DATABASES = {
+	    'default': {
+	        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+	        'NAME': 'nominatim',                      # Or path to database file if using sqlite3.
+	        # The following settings are not used with sqlite3:
+	        'USER': '******',
+	        'PASSWORD': '******',
+	        'HOST': '***.***.***.***',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+	        'PORT': '5432',                      # Set to empty string for default.
+	    }
+	}
+
+
 
 
 
