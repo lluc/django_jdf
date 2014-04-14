@@ -1,7 +1,7 @@
 # Django settings for django_jdf project.
 
 from prod_settings import *
-
+import os
 
 MANAGERS = ADMINS
 
@@ -127,21 +127,17 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
+        
     },
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
-            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         },
         'file': {
             'level': 'INFO',
-            'filters': ['require_debug_false'],
             'class': 'logging.FileHandler',
-            'filename': 'debug.log',
+            'filename': os.path.join(os.path.dirname(__file__), 'debug.log'),
             'formatter': 'verbose',
         },
     },
