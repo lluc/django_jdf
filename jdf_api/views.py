@@ -86,10 +86,11 @@ def search_place_name(request, place_name):
             nom_phonem = ""
             for item in composants["nom"] :
                 nom_phonem = nom_phonem + item
-                
+            logger.info("phonem : "+nom_phonem)
+            
             # Encodage phonetique
             mot = soundex_fr.soundex_fr()
-            phonetique = mot.analyse( nom_phonem.decode('latin-1') )
+            phonetique = mot.analyse( nom_phonem.encode('utf-8'))
             logger.info("phonetique : " + phonetique )
             
             # Ne garder que les noms phonétiques qui correspondent
@@ -113,6 +114,7 @@ def search_place_name(request, place_name):
             ORDER BY 
                 ph.nom, 
                 ph.poids
+            LIMIT 50
             """
             # Formater correctement la requête
             requete = requete.replace("\n","")

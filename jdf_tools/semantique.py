@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- encoding: utf8 -*-
+# -*- encoding: latin-1 -*-
 
 import pyparsing as pp
 import re
@@ -11,13 +11,12 @@ class semantique :
         self.ville = pp.Optional( pp.Word( pp.alphas ), default="")
         self.cp =  pp.Optional( pp.Word( pp.nums,exact=5) , default="")
         
-        self.alphas_fr = pp.alphas+"éèëêàâûôÉÈËÊç"
+        self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊç'.decode('utf-8').encode('latin-1')
     
     def abbreviation(self, phrase) :
         """
         Remplacer les abréviations communes
         """
-        phrase = phrase.encode('latin-1')
         
         # Remplacer les symboles
         for w in ['-',';',':','\'','.'] :
@@ -133,7 +132,7 @@ class semantique :
         
         # Initialisation des résultats
         result = {}
-        
+
         # Définir la grammaire d'une adresse
         nom = pp.Group( pp.OneOrMore( pp.Word(self.alphas_fr) ) + pp.Suppress(self.sep))
         voie = pp.oneOf( voies )
