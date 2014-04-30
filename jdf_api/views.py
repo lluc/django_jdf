@@ -75,27 +75,26 @@ def search_place_name(request, place_name):
 
     try:
         
-        # Analyser les elements de la phrase
-        #  et les charger dans la structure composants.
-        s = semantique.semantique()
-        composants = s.analyser(place_name)
+        # Analyzing items of a sentence
+        #  and load them in the components
+        s = semantique.semantic()
+        components = s.analyze(place_name)
 
-        # Si la structure existe ...
-        if composants :
-            # ... concatener les éléments du nom
-            nom_phonem = ""
-            for item in composants["nom"] :
-                nom_phonem = nom_phonem + item
-            logger.info("phonem : "+nom_phonem)
+        # IF components exists ...
+        if components :
+            # ... concatenates items of the name
+            name_phonem = ""
+            for item in components["name"] :
+                name_phonem = name_phonem + item
+            logger.info("phonem : "+name_phonem)
             
-            # Encodage phonetique
+            # Encode phonetic
             mot = soundex_fr.soundex_fr()
-            phonetique = mot.analyse( nom_phonem.encode('utf-8'))
-            logger.info("phonetique : " + phonetique )
+            phonetic = mot.analyse( name_phonem.encode('utf-8'))
+            logger.info("phonetic : " + phonetic)
             
-            # Ne garder que les noms phonétiques qui correspondent
-            # au type voulu (champ 'semantic')
-            requete = """
+            # Filtering on field 'semantic'
+            request_sql = """
             SELECT
                 DISTINCT ph.nom, 
                 ph.poids, 
@@ -116,16 +115,16 @@ def search_place_name(request, place_name):
                 ph.poids
             LIMIT 50
             """
-            # Formater correctement la requête
-            requete = requete.replace("\n","")
-            requete = ' '.join(requete.split())
-            # Substituer les variables connues
-            requete = requete % (phonetique+"%", composants["type"])
+            # Fomatting the request
+            request_sql = request_sql.replace("\n","")
+            request_sql = ' '.join(request_sql.split())
+            # Replace known values
+            request_sql = request_sql % (phonetic+"%", components["type"])
             
-            logger.info("requete : " + requete )
+            logger.info("request : " + request_sql )
             
-            # Exécuter la requête
-            cursor.execute( requete )
+            # Execute request
+            cursor.execute( request_sql )
             
             
             
@@ -134,7 +133,7 @@ def search_place_name(request, place_name):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        donnees = dictfetchall(cursor)
-        logger.info("reponse : ")
-        logger.info(donnees)
-        return Response(donnees)
+        data = dictfetchall(cursor)
+        logger.info("response : ")
+        logger.info(data)
+        return Response(data)

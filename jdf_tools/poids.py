@@ -4,45 +4,44 @@
 import csv
 
 
-class poids:
+class weight:
     def __init__(self):
-        self.dict_poids = []
-        self.charger()
+        self.dict_weight = []
+        self.load()
         
-    def charger(self):
+    def load(self):
         """
-         Charger les paramètres contenus dans le fichier *poids.csv*
+         Load parameters includes in the *weight.csv* file
         """
-        fichier = open('poids.csv', 'r')
-        lecteur = csv.reader(fichier, delimiter=',')
-        for ligne in lecteur :
-            if len(ligne)==3 :
-                self.dict_poids.append({
-                    'classe' : ligne[0],
-                    'type' : ligne[1],
-                    'poids' : ligne[2]
+        f = open('weight.csv', 'r')
+        reader = csv.reader(f, delimiter=',')
+        for line in reader :
+            if len(line)==3 :
+                self.dict_weight.append({
+                    'class' : line[0],
+                    'type' : line[1],
+                    'weight' : line[2]
                 })
-        fichier.close()
+        f.close()
 
-    def chercher(self,classe,typ) :
+    def search(self,class_,typ) :
         """
-            Renvoyer un poids, en focntion de la classe et du type
-            demandés.
+            Returns a weight
         """
-        for ligne in self.dict_poids :
-            if ligne['classe']==classe and ligne['type']== typ :
-                return ligne['poids']
+        for line in self.dict_weight :
+            if line['class']==class_ and line['type']== typ :
+                return line['weight']
         
-        # Valeur par défaut :
+        # Default value
         return 100
 
 
 if __name__ == '__main__':
-    p = poids()
-    print p.dict_poids
-    print p.chercher("highway","secondary")
-    print p.chercher("highway","path")
-    print p.chercher("highway","track")
-    print p.chercher("highway","toto")
+    p = weight()
+    print p.dict_weight
+    print p.search("highway","secondary")
+    print p.search("highway","path")
+    print p.search("highway","track")
+    print p.search("highway","toto")
     
     
