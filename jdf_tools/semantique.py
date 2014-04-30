@@ -7,7 +7,7 @@ import re
 class semantic :
     def __init__(self):
         # Common grammar
-        self.sep = pp.Optional(pp.oneOf(","))
+        self.sep = pp.Optional(pp.Word(',',exact=1))
         self.town = pp.Optional( pp.Word( pp.alphas ), default="")
         self.cp =  pp.Optional( pp.Word( pp.nums,exact=5) , default="")
         
@@ -135,13 +135,14 @@ class semantic :
         # Grammar of an address
         name = pp.Group( pp.OneOrMore( pp.Word(self.alphas_fr) ) + pp.Suppress(self.sep))
         way = pp.oneOf( ways )
-        number = pp.Group( pp.Word( pp.nums) + pp.Optional(pp.Word(pp.alphas) ) )
-        
-        # TODO : prise en charge des accents.
+        number =  pp.Group(pp.Word( pp.nums))
+        number2 =  pp.Group(pp.Word( pp.nums) + pp.Optional( pp.Word(pp.alphas)) )
         
         # Using the grammar
-        address = pp.Optional( number, default="##" ) + pp.Optional( pp.Suppress(self.sep) ) +\
-            way + pp.Optional(name, default="")  + self.cp + self.town
+        address1 =pp.Suppress(self.sep) +\
+            way + pp.Optional(name, default="") + self.cp + self.town
+        address = pp.Optional( number, default="##" ) + address1
+        address2 = pp.Optional( number2, default="##" ) + address1
             
         try:
             # Detect if sentence is matching address pattern
@@ -153,13 +154,23 @@ class semantic :
             result["town"] = tokens[4]
             result["type"] ="address"
         except :
-            # Fill empty fields
-            result["number"] = ""
-            result["way"] = ""
-            result["name"] = ""
-            result["cp"] = ""
-            result["town"] = ""
-            result["type"] = ""
+            try:
+                # Detect if sentence is matching address2 pattern
+                tokens = address2.parseString( sentence )
+                result["number"] = tokens[0]
+                result["way"] = tokens[1]
+                result["name"] = tokens[2]
+                result["cp"] = tokens[3]
+                result["town"] = tokens[4]
+                result["type"] ="address"
+            except :
+                # Fill empty fields
+                result["number"] = ""
+                result["way"] = ""
+                result["name"] = ""
+                result["cp"] = ""
+                result["town"] = ""
+                result["type"] = ""
         return result
         
         
@@ -232,5 +243,7 @@ if __name__ == '__main__':
     print s.analyze( "Jules Verne" )
     print s.analyze( "Jules Verne, nantes" )
     print s.analyze( "Station de captage d'eau potable" )
+    print s.analyze( "58 rue colbert" )
+    print s.analyze( "58b rue colbert" )
     
 
