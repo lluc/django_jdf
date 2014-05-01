@@ -1,17 +1,20 @@
 #!/usr/bin/python
-# -*- encoding: latin-1 -*-
+# -*- encoding: utf-8 -*-
 
 import pyparsing as pp
 import re
 
 class semantic :
-    def __init__(self):
+    def __init__(self, produce=False):
         # Common grammar
         self.sep = pp.Optional(pp.Word(',',exact=1))
         self.town = pp.Optional( pp.Word( pp.alphas ), default="")
         self.cp =  pp.Optional( pp.Word( pp.nums,exact=5) , default="")
         
-        self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊç'.decode('utf-8').encode('latin-1')
+        if produce==False :
+            self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊç'.decode('utf-8').encode('latin-1')
+        else :
+            self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊç'
     
     def abbreviation(self, sentence) :
         """
@@ -68,10 +71,10 @@ class semantic :
         """
         
         sentence = self.abbreviation( sentence )
-        print sentence
+
         # Tests
         #-------
-        
+
         resStation = self.parserStation( sentence )
         if resStation["name"] != "" :
                 # It's a station
@@ -181,7 +184,7 @@ class semantic :
         
         # Stop-words for stations
         stations = [
-            "arrêt",
+            u'arrêt',
             "gare"
             ]
         
@@ -213,6 +216,7 @@ class semantic :
             result["town"] = ""
             result["type"] = ""
             
+        print result
         return result
 
 
@@ -245,5 +249,6 @@ if __name__ == '__main__':
     print s.analyze( "Station de captage d'eau potable" )
     print s.analyze( "58 rue colbert" )
     print s.analyze( "58b rue colbert" )
+    print s.analyze( "arrêt palais")
     
 
