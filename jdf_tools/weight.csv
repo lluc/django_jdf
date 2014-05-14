@@ -1,0 +1,17 @@
+place,city,1
+highway,primary,1
+highway,secondary,1
+highway,tertiary,1
+highway,residential,1
+highway,unclassified,2
+highway,path,2
+highway,track,2
+highway,bus_stop,3
+amenity,bicycle_parking,3
+natural,water,3
+place,locality,2
+place,hamlet,2
+amenity,cafe,4
+shop,bakery,4
+building,yes,4
+
