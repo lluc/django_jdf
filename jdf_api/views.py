@@ -96,13 +96,14 @@ def search_place_name(request, place_name):
             # Filtering on field 'semantic'
             request_sql = """
             SELECT
-                DISTINCT ph.nom, 
+                ph.nom, 
                 ph.poids, 
                 pl.class, 
                 pl.type, 
                 ph.ville, 
                 ph.semantic, 
-                pl.name->'name' AS libelle 
+                pl.name->'name' AS libelle,
+                ST_Box2D(pl.geometry)
             FROM 
                 phonetique AS ph,
                 place AS pl 
