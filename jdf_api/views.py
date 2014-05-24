@@ -91,7 +91,18 @@ def search_place_name(request, place_name):
             # Encode phonetic
             mot = soundex_fr.soundex_fr()
             phonetic = mot.analyse( name_phonem.encode('utf-8'))
-            logger.info("phonetic : " + phonetic)
+            
+            # Extending phonetic search on syllabus ...
+            final_phonetic = phonetic
+            if phonetic[-1]=='O' :
+                final_phonetic="("+phonetic+"|"+phonetic[:-1]+"U|"+phonetic[:-1]+"0)"
+            if phonetic[-1]=='I' :
+                final_phonetic="("+phonetic+"|"+phonetic[:-1]+"1)"
+            if phonetic[-1]=='K' :
+                final_phonetic="("+phonetic+"|"+phonetic[:-1]+"9)"
+            
+            
+            logger.info("phonetic : " + final_phonetic)
             
             # Filtering on field 'semantic'
             request_sql = """
@@ -108,9 +119,8 @@ def search_place_name(request, place_name):
                 phonetique AS ph,
                 place AS pl 
             WHERE 
-                ph.nom LIKE '%s' AND 
-                pl.osm_id = ph.osm_id AND
-                ph.semantic LIKE '%s'
+                ph.nom SIMILAR TO '%s' AND 
+                pl.osm_id = ph.osm_id 
             ORDER BY 
                 ph.nom, 
                 ph.poids
@@ -120,7 +130,7 @@ def search_place_name(request, place_name):
             request_sql = request_sql.replace("\n","")
             request_sql = ' '.join(request_sql.split())
             # Replace known values
-            request_sql = request_sql % (phonetic+"%", components["type"])
+            request_sql = request_sql % (final_phonetic+"%")
             
             logger.info("request : " + request_sql )
             
