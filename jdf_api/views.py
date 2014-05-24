@@ -94,6 +94,7 @@ def search_place_name(request, place_name):
             
             # Extending phonetic search on syllabus ...
             final_phonetic = phonetic
+            # Inspect the last character
             if phonetic[-1]=='O' :
                 final_phonetic="("+phonetic+"|"+phonetic[:-1]+"U|"+phonetic[:-1]+"0)"
             if phonetic[-1]=='I' :
@@ -104,7 +105,12 @@ def search_place_name(request, place_name):
             
             logger.info("phonetic : " + final_phonetic)
             
-            # Filtering on field 'semantic'
+            # Specializing semantic search
+            final_semantic = components["type"]
+            if components["type"]== 'poi' :
+                final_semantic = "(poi|address)"
+            
+            # Filtering
             request_sql = """
             SELECT
                 ph.nom, 
@@ -120,7 +126,8 @@ def search_place_name(request, place_name):
                 place AS pl 
             WHERE 
                 ph.nom SIMILAR TO '%s' AND 
-                pl.osm_id = ph.osm_id 
+                pl.osm_id = ph.osm_id AND
+                ph.semantic SIMILAR TO '%s'
             ORDER BY 
                 ph.nom, 
                 ph.poids
@@ -130,7 +137,7 @@ def search_place_name(request, place_name):
             request_sql = request_sql.replace("\n","")
             request_sql = ' '.join(request_sql.split())
             # Replace known values
-            request_sql = request_sql % (final_phonetic+"%")
+            request_sql = request_sql % (final_phonetic+"%", final_semantic+"%")
             
             logger.info("request : " + request_sql )
             
