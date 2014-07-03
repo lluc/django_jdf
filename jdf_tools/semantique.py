@@ -11,10 +11,30 @@ class semantic :
         self.town = pp.Optional( pp.Word( pp.alphas ), default="")
         self.cp =  pp.Optional( pp.Word( pp.nums,exact=5) , default="")
         
+        # If this class is used to analyze the data
         if produce==False :
             self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊç'.decode('utf-8').encode('latin-1')
         else :
+            # ... or to generate the data
             self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊç'
+    
+    def shortWords(self,sentence) :
+        """
+        Delete "short words"
+        """
+        list_words = [ "de",
+                        "d'",
+                        "l'",
+                        "la",
+                        "le",
+                        "du",
+                        "des",
+                        "un"]
+                        
+        for word in list_words :
+            sentence = re.sub(r'\b'+word+'\s+','',sentence)
+            
+        return sentence
     
     def abbreviation(self, sentence) :
         """
@@ -71,13 +91,14 @@ class semantic :
         """
         
         sentence = self.abbreviation( sentence )
+        sentence = self.shortWords( sentence )
 
         # Tests
         #-------
 
         resStation = self.parserStation( sentence )
         if resStation["name"] != "" :
-                # It's a station
+            # It's a station
             return resStation
         
         resaddress = self.parserAddress( sentence )
