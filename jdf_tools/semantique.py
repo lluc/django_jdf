@@ -91,9 +91,8 @@ class semantic :
         """
         
         sentence = self.abbreviation( sentence )
-        print sentence
         sentence = self.shortWords( sentence )
-        print sentence
+
 
         # Tests
         #-------
@@ -239,7 +238,6 @@ class semantic :
             result["town"] = ""
             result["type"] = ""
             
-        print result
         return result
 
 
