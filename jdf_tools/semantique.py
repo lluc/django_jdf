@@ -13,10 +13,10 @@ class semantic :
         
         # If this class is used to analyze the data
         if produce==False :
-            self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊç'.decode('utf-8').encode('latin-1')
+            self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊçîù'.decode('utf-8').encode('latin-1')
         else :
             # ... or to generate the data
-            self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊç'
+            self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊçîù'
     
     def shortWords(self,sentence) :
         """
@@ -32,7 +32,7 @@ class semantic :
                         "un"]
                         
         for word in list_words :
-            sentence = re.sub(r'\b'+word+'\s+','',sentence)
+            sentence = re.sub(r'\b'+word+'\s+',' ',sentence)
             
         return sentence
     
@@ -62,7 +62,7 @@ class semantic :
                 [ "imp", " impasse "],
                 [ "ch", " chemin "],
                 [ "che", " chemin "],
-                [ "all", " allée "],
+                [ "all", u' allée '],
                 [ "rt", " route "],
                 [ "rte", " route "],
                 [ "doc", " docteur "],
@@ -72,10 +72,10 @@ class semantic :
                 [ "lt", " lieutenant "],
                 [ "cpt", " capitaine "],
                 [ "cdt", " commandant "],
-                [ "gal", " général "],
-                [ "pdt", " président "],
+                [ "gal", u' général '],
+                [ "pdt", u' président '],
                 [ "mgr", " monseigneur "],
-                [ "me", " maître " ]
+                [ "me", u' maître ' ]
             ]
         
         for d in dico :
@@ -91,7 +91,9 @@ class semantic :
         """
         
         sentence = self.abbreviation( sentence )
+        print sentence
         sentence = self.shortWords( sentence )
+        print sentence
 
         # Tests
         #-------
@@ -271,5 +273,7 @@ if __name__ == '__main__':
     print s.analyze( "58 rue colbert" )
     print s.analyze( "58b rue colbert" )
     print s.analyze( "arrêt palais")
+    print s.analyze( "la grande bruère")
+    print s.analyze( "charles lindbergh")
     
 
