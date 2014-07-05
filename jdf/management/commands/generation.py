@@ -23,14 +23,14 @@ class Command(BaseCommand):
             default=False,
             help='Clear the table "phonetique"'),
         )
-    args = '<user> <host> <osm_id_administrative_boundary> <name>'
+    args = '<user> <host> <osm_id_administrative_boundary>'
     help = 'Generate data for the items contained by the boundary.'
     
     def handle(self, *args, **options):
         n = nominatim.nominatim()
         if len(args)<2 :
             self.stdout.write('Error : to proceed, use the args ')
-            self.stdout.write('\t\t<user> <host> <osm_id_administrative_boundary> <name>')
+            self.stdout.write('\t\t<user> <host> <osm_id_administrative_boundary>')
             self.stdout.write('Abort.')
             return
         
@@ -49,13 +49,12 @@ class Command(BaseCommand):
             
         # Parse the args
         osm_id = int(args[2])
-        commune = args[3]
+
         
         # Display args
         self.stdout.write('User \t: '+user)
         self.stdout.write('Host IP : '+host)
         self.stdout.write('osm_id \t: '+str(osm_id))
-        self.stdout.write('name \t: '+commune)
                 
         # Confirm process
         if not self.confirm() :
@@ -64,7 +63,7 @@ class Command(BaseCommand):
         # Proceed
         self.stdout.write('  generating data ...')
         start_time = time.time()
-        n.generation( user, host, osm_id, commune )
+        n.generation( user, host, osm_id )
         end_time = time.time()
         elapsed_time = end_time - start_time
         self.stdout.write('\t... generated in '+str(elapsed_time)+' second(s)')

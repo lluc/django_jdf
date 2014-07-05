@@ -34,31 +34,67 @@ class nominatim:
         self.deconnexion()
         
     
-    def generation(self, user, host, osm_id, commune):
+    def generation(self, user, host, osm_id):
         # Connection
         self.connection( user,host)
         
+        # Listes des communes à générer
+        communes = self.collect_communes( osm_id )
+        
         cur = self.conn.cursor()
         
-    
-        # Récupérer les éléments contenus spatialement
-        #  dans l'entité osm_id
-        cur.execute(self.requete( osm_id))
-        
-        res = self.traitement(cur, commune)
-        
-        f = open('insertion.txt','w')
-        for ligne in res :
-            f.write(str(ligne)+"\n")
-        f.close()
-        
-         # Ecriture dans la base de données
-        self.insertion( res )
+        for commune in communes :
+            # Récupérer les éléments contenus spatialement
+            #  dans l'entité osm_id
+            cur.execute(self.requete( commune[0]))
+            
+            res = self.traitement(cur, commune[1])
+            
+            f = open('insertion.txt','w')
+            for ligne in res :
+                f.write(str(ligne)+"\n")
+            f.close()
+            
+             # Ecriture dans la base de données
+            self.insertion( res )
         
         # Fermeture
         cur.close()
         self.deconnexion()
     
+    
+    def collect_communes(self, osmid):
+        
+        request = """
+        SELECT
+            osm_id,
+            name->'name' 
+        FROM 
+            public.placex 
+        WHERE 
+            admin_level=8 AND 
+            class like 'boundary' AND 
+            name->'name' LIKE '%' AND
+          ST_Contains( (
+            SELECT
+                place2.geometry
+            FROM
+                public.place AS place2
+            WHERE
+                place2.osm_id = {osm_id} ), public.placex.geometry )
+        """.format(osm_id = osmid)
+        
+        # Créer un curseur
+        curseur = self.conn.cursor()
+        
+        # Récupérer les éléments contenus spatialement
+        #  dans l'entité osm_id
+        curseur.execute(request)
+        
+        return curseur.fetchall()
+        
+        
+        
     
     def connection(self, user, host):
         
@@ -193,5 +229,3 @@ class nominatim:
         """.format(osm_id = osmid)
         return request
         
-    
-    
