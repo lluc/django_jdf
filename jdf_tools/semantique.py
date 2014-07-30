@@ -207,6 +207,7 @@ class semantic :
         # Stop-words for stations
         stations = [
             u'arrêt',
+            "arret",
             "gare"
             ]
         

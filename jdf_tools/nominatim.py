@@ -120,15 +120,12 @@ class nominatim:
         
         # Parcourir les réponses
         for ligne in curseur.fetchall() :
-            print ligne
             # Si le premier élément existe ...
             if ligne[0] :
                 nom = ligne[0]
                 
                 # Analyser la sémantique
                 composants = sem.analyze(nom)
-                print "nom : "+nom
-                print "composants : "+str(composants)
                 
                 nom_phonem = ""
                 
@@ -136,13 +133,10 @@ class nominatim:
                 if composants:
                     # Affectation par défaut du type
                     type_ligne = composants["type"]
-                    print type_ligne
                     
                     # Concaténer les éléments du nom
-                    print composants["name"]
                     for item in composants["name"] :
                         nom_phonem = nom_phonem + item #.decode('Latin-1')
-                    print "phonem : "+nom_phonem
                     
                     # Ajouter le nom de la commune
                     nom_phonem = nom_phonem +" "+commune
@@ -192,7 +186,6 @@ class nominatim:
         
         # Lire les lignes du tableau
         for ligne in tableau :
-            print ligne
             # et créer un nouvel enregistrement dan la table "phonetique"
             curseur.execute(
                 "INSERT INTO phonetique(nom,osm_id,poids,ville,semantic) VALUES ( %s, %s, %s, %s, %s)",
