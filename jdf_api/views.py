@@ -63,10 +63,12 @@ def dictfetchall(cursor):
 
 
 @api_view(['GET'])
-def search_place_name(request, place_name):
+def search_place_name(request, place_name,option_strict=0):
     """
         Search a place, using a phonetic search with the name
     """
+    
+    print request.DATA
     res = []
     cursor = connection.cursor()
     
@@ -127,7 +129,7 @@ def search_place_name(request, place_name):
             WHERE 
                 ph.nom SIMILAR TO '%s' AND 
                 pl.osm_id = ph.osm_id AND
-                ph.semantic SIMILAR TO '%s'
+                ph.semantic SIMILAR TO '%s' %s
             ORDER BY 
                 ph.nom, 
                 ph.poids
@@ -136,8 +138,14 @@ def search_place_name(request, place_name):
             # Fomatting the request
             request_sql = request_sql.replace("\n","")
             request_sql = ' '.join(request_sql.split())
+            
+            # User want see only the places who owns a weight
+            strict=""
+            if 'strict' in request.QUERY_PARAMS :
+                strict=" AND ph.poids<100"
+                
             # Replace known values
-            request_sql = request_sql % (final_phonetic+"%", final_semantic+"%")
+            request_sql = request_sql % (final_phonetic+"%", final_semantic+"%", strict)
             
             logger.info("request : " + request_sql )
             
