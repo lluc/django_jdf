@@ -39,26 +39,35 @@ class nominatim:
         self.connection( user,host)
         
         # Listes des communes à générer
-        communes = self.collect_communes( osm_id )
+        if str(osm_id)=="all" :
+            communes = self.collect_communes_toutes()
+        else :
+            communes = self.collect_communes( int(osm_id) )
         
+        self.ecriture_communes( communes )
+        
+        
+    def ecriture_communes(self, communes) :
         cur = self.conn.cursor()
         
+        f = open('insertion.txt','w')
+        
         for commune in communes :
-            # Récupérer les éléments contenus spatialement
-            #  dans l'entité osm_id
+            f.write("-----------------------\n"+
+                str(commune[0])+";"+commune[1].encode("utf-8")+"\n-------------------\n")
+            # Récupérer les éléments contenus dans
+            #  la liste des commune
             cur.execute(self.requete( commune[0]))
             
             res = self.traitement(cur, commune[1])
             
-            f = open('insertion.txt','w')
             for ligne in res :
                 f.write(str(ligne)+"\n")
-            f.close()
-            
              # Ecriture dans la base de données
             self.insertion( res )
         
         # Fermeture
+        f.close()
         cur.close()
         self.deconnexion()
     
@@ -89,6 +98,29 @@ class nominatim:
         
         # Récupérer les éléments contenus spatialement
         #  dans l'entité osm_id
+        curseur.execute(request)
+        
+        return curseur.fetchall()
+        
+        
+    def collect_communes_toutes(self):
+        
+        request = """
+        SELECT
+            osm_id,
+            name->'name' 
+        FROM 
+            public.placex 
+        WHERE 
+            admin_level=8 AND 
+            class like 'boundary' AND 
+            name->'name' LIKE '%'
+        """
+        
+        # Créer un curseur
+        curseur = self.conn.cursor()
+        
+        # Récupérer les éléments de type commune (admin_level=8)
         curseur.execute(request)
         
         return curseur.fetchall()
@@ -218,7 +250,8 @@ class nominatim:
             FROM
                 public.place AS place2
             WHERE
-                place2.osm_id = {osm_id} ), public.place.geometry )
+                place2.osm_id = {osm_id} AND
+                place2.osm_type LIKE 'R'), public.place.geometry )
         """.format(osm_id = osmid)
         return request
         

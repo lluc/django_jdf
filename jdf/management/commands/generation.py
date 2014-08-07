@@ -48,7 +48,7 @@ class Command(BaseCommand):
             return
             
         # Parse the args
-        osm_id = int(args[2])
+        osm_id = args[2]
 
         
         # Display args
