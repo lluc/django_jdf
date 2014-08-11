@@ -128,10 +128,10 @@ class nominatim:
         
         
     
-    def connection(self, user, host):
+    def connection(self, user, password, host):
         
         chaine_connexion = "dbname=nominatim user="+\
-            user+" host="+host+" port=5432"
+            user+" password="+password+" host="+host+" port=5432"
         
         # Se connecter à une base existante
         self.conn = pg.connect( chaine_connexion )
