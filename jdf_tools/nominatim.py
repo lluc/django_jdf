@@ -20,9 +20,9 @@ class nominatim:
         pass
     
     
-    def reset(self, user, host) :
+    def reset(self, user, password, host) :
         # Connection
-        self.connection( user,host)
+        self.connection( user,password,host)
         cur = self.conn.cursor()
         
         # Vider la table "phonetique"
@@ -34,9 +34,9 @@ class nominatim:
         self.deconnexion()
         
     
-    def generation(self, user, host, osm_id):
+    def generation(self, user, password, host, osm_id):
         # Connection
-        self.connection( user,host)
+        self.connection( user, password, host)
         
         # Listes des communes à générer
         if str(osm_id)=="all" :

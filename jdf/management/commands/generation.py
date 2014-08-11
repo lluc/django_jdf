@@ -23,32 +23,34 @@ class Command(BaseCommand):
             default=False,
             help='Clear the table "phonetique"'),
         )
-    args = '<user> <host> <osm_id_administrative_boundary>'
+    args = '<user> <password> <host> <osm_id_administrative_boundary>'
     help = 'Generate data for the items contained by the boundary.'
     
     def handle(self, *args, **options):
         n = nominatim.nominatim()
-        if len(args)<2 :
+        if len(args)<3 :
             self.stdout.write('Error : to proceed, use the args ')
-            self.stdout.write('\t\t<user> <host> <osm_id_administrative_boundary>')
+            self.stdout.write('\t\t<user> <password> <host> <osm_id_administrative_boundary>')
             self.stdout.write('Abort.')
             return
         
         # Parse the args
         user = args[0]
-        host = args[1]
+        password = args[1]
+        host = args[2]
+        
         
         # option reset -> clear the table
         if options['reset']:
             self.stdout.write('Do you really want to clear the table "phonetique" ?')
             if self.confirm():
                 self.stdout.write('Clearing the table ...')
-                n.reset(user,host)
+                n.reset(user,password,host)
                 self.stdout.write('\t... Clearing complete !')
             return
             
         # Parse the args
-        osm_id = args[2]
+        osm_id = args[3]
 
         
         # Display args
@@ -63,7 +65,7 @@ class Command(BaseCommand):
         # Proceed
         self.stdout.write('  generating data ...')
         start_time = time.time()
-        n.generation( user, host, osm_id )
+        n.generation( user, password, host, osm_id )
         end_time = time.time()
         elapsed_time = end_time - start_time
         self.stdout.write('\t... generated in '+str(elapsed_time)+' second(s)')
