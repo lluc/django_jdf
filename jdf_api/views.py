@@ -130,16 +130,13 @@ def search_place_name(request, place_name,option_strict=0):
                 ph.nom SIMILAR TO '%s' AND 
                 pl.osm_id = ph.osm_id AND
                 ph.semantic SIMILAR TO '%s' %s
-            ORDER BY 
-                ph.nom, 
-                ph.poids
-            LIMIT 50
+            LIMIT 20
             """
             # Fomatting the request
             request_sql = request_sql.replace("\n","")
             request_sql = ' '.join(request_sql.split())
             
-            # User want see only the places who owns a weight
+            # User want see only the places that owns a weight
             strict=""
             if 'strict' in request.QUERY_PARAMS :
                 strict=" AND ph.poids<100"

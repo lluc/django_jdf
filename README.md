@@ -11,7 +11,7 @@ The goal of *Django_jdf* is to serve a geocoding service based on "Nominatim" up
 
 Currently, the only supported language (in search) is french language.
 
-The name "Jour de Fête" ( aka JDF in this module) comes of a french film of Jacques Tati : in a small village, a postman wants to optimize his circuit.
+The name "Jour de Fête" ( aka JDF in this module) comes from a french film of Jacques Tati : in a small village, a postman wants to optimize his circuit.
 
 ---
 
@@ -79,6 +79,15 @@ Le fichier *prod_settings.py* pourrait être de la forme suivante :
 	        'PORT': '5432',                      # Set to empty string for default.
 	    }
 	}
+
+
+## Fonctionnement
+
+### Requêtage
+On utilise la biliothèque *Django Rest Framework* ( [site](http://www.django-rest-framework.org/) ). 
+Les sources de requêtages se trouvent dans le répertoire qui gère l'API : *jdf_api*
+
+C'est le fichier *views.py* qui contient les requêtes à la base de données.
 
 
 
