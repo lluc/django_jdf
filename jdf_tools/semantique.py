@@ -23,8 +23,8 @@ class semantic :
         Delete "short words"
         """
         list_words = [ "de",
-                        "d'",
-                        "l'",
+                        "d",
+                        "l",
                         "la",
                         "le",
                         "du",
@@ -274,5 +274,6 @@ if __name__ == '__main__':
     print s.analyze( "arrêt palais")
     print s.analyze( "la grande bruère")
     print s.analyze( "charles lindbergh")
+    print s.analyze( "l'heure tranquille")
     
 
