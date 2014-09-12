@@ -3,6 +3,7 @@
 
 import pyparsing as pp
 import re
+import numbers
 
 class semantic :
     def __init__(self, produce=False):
@@ -13,10 +14,10 @@ class semantic :
         
         # If this class is used to analyze the data
         if produce==False :
-            self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊçîù'.decode('utf-8').encode('latin-1')
+            self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊçîù0123456789'.decode('utf-8').encode('latin-1')
         else :
             # ... or to generate the data
-            self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊçîù'
+            self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊçîù0123456789'
     
     def shortWords(self,sentence) :
         """
@@ -100,16 +101,33 @@ class semantic :
         resStation = self.parserStation( sentence )
         if resStation["name"] != "" :
             # It's a station
+            
+            # Convert the numbers
+            resStation["name"] =self.addressToLetters( resStation["name"] )
+            
             return resStation
         
         resaddress = self.parserAddress( sentence )
         if resaddress["name"] != "" :
             # It's an  address
+            
+            # Convert the numbers
+            resaddress["name"] = self.addressToLetters( resaddress["name"] )
+            
             return resaddress
         
         return self.parserDefault( sentence )
         
-    
+    def addressToLetters(self, address) :
+        """
+        Convert the numbers contained in an address to words
+        """
+        n = numbers.numbers()
+        for i in range(0,len(address)) :
+            if address[i].isdigit()==True :
+                address[i] = n.convNumber2letter(int(address[i])).lower()
+        return address
+        
     def parserDefault(self,sentence) :
         """
         Default parser.
@@ -171,6 +189,7 @@ class semantic :
             
         try:
             # Detect if sentence is matching address pattern
+            #  (only numbered adress. Ex = 1 )
             tokens = address.parseString( sentence )
             result["number"] = tokens[0]
             result["way"] = tokens[1]
@@ -181,6 +200,7 @@ class semantic :
         except :
             try:
                 # Detect if sentence is matching address2 pattern
+                #  (number followed by a letter. Ex = 1B )
                 tokens = address2.parseString( sentence )
                 result["number"] = tokens[0]
                 result["way"] = tokens[1]
@@ -275,5 +295,6 @@ if __name__ == '__main__':
     print s.analyze( "la grande bruère")
     print s.analyze( "charles lindbergh")
     print s.analyze( "l'heure tranquille")
+    print s.analyze( "rue du 11 novembre")
     
 
