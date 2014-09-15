@@ -81,18 +81,16 @@ def search_place_name(request, place_name,option_strict=0):
         #  and load them in the components
         s = semantique.semantic()
         components = s.analyze(place_name)
-
         # IF components exists ...
         if components :
-            # ... concatenates items of the name
-            name_phonem = ""
-            for item in components["name"] :
-                name_phonem = name_phonem + item
-            logger.info("phonem : "+name_phonem)
-            
-            # Encode phonetic
             mot = soundex_fr.soundex_fr()
-            phonetic = mot.analyse( name_phonem.encode('utf-8'))
+            
+            # ... concatenates items of the name
+            phonetic = ""
+            for item in components["name"] :
+                # Encode phonetic
+                phonetic = phonetic + mot.analyse( item.encode('utf-8'))
+            logger.info("phonetic : "+phonetic)
             
             # Extending phonetic search on syllabus ...
             final_phonetic = phonetic

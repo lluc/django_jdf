@@ -296,5 +296,6 @@ if __name__ == '__main__':
     print s.analyze( "charles lindbergh")
     print s.analyze( "l'heure tranquille")
     print s.analyze( "rue du 11 novembre")
+ 
     
 
