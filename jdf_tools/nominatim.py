@@ -51,25 +51,28 @@ class nominatim:
         cur = self.conn.cursor()
         
         f = open('insertion.txt','w')
-        
-        for commune in communes :
-            f.write("-----------------------\n"+
-                str(commune[0])+";"+commune[1].encode("utf-8")+"\n-------------------\n")
-            # Récupérer les éléments contenus dans
-            #  la liste des commune
-            cur.execute(self.requete( commune[0]))
-            
-            res = self.traitement(cur, commune[1])
-            
-            for ligne in res :
-                f.write(str(ligne)+"\n")
-             # Ecriture dans la base de données
-            self.insertion( res )
-        
+                
+        ecriture = [ self.ecriture_commune(cur,commune) for commune in communes ]
         # Fermeture
         f.close()
         cur.close()
         self.deconnexion()
+    
+    
+    def ecriture_commune(self, cur, commune) :
+        #f.write("-----------------------\n"+
+        #        str(commune[0])+";"+commune[1].encode("utf-8")+"\n-------------------\n")
+        
+        # Récupérer les éléments contenus dans
+        #  la liste des commune
+        cur.execute(self.requete( commune[0]))
+        
+        res = self.traitement(cur, commune[1])
+        
+        #for ligne in res :
+        #    f.write(str(ligne)+"\n")
+        # Ecriture dans la base de données
+        self.insertion( res )
     
     
     def collect_communes(self, osmid):
@@ -145,65 +148,71 @@ class nominatim:
     def traitement(self, curseur, commune):
         
         # Initialisations
+        resultat = []
+        
+        res = [ self.traitement_ligne( ligne, commune ) for ligne in curseur.fetchall() ]
+        resultat.append(res)
+        
+        # Renvoyer le tableau de résultat
+        return resultat
+        
+    def traitement_ligne(self, ligne, commune):
+        
+        # Initialisations
         mot = sfr.soundex_fr()
         sem = semantique.semantic(False)
         pds = poids.weight()
-        resultat = []
+        resultat=[]
         
-        # Parcourir les réponses
-        for ligne in curseur.fetchall() :
-            # Si le premier élément existe ...
-            if ligne[0] :
-                nom = ligne[0]
+        if ligne[0] :
+            nom = ligne[0]
+            
+            # Analyser la sémantique
+            composants = sem.analyze(nom)
+            
+            nom_phonem = ""
+            
+            # S'il existe un composant ...
+            if composants:
+                # Affectation par défaut du type
+                type_ligne = composants["type"]
                 
-                # Analyser la sémantique
-                composants = sem.analyze(nom)
-                
-                nom_phonem = ""
-                
-                # S'il existe un composant ...
-                if composants:
-                    # Affectation par défaut du type
-                    type_ligne = composants["type"]
-                    
-                    # Concaténer les éléments du nom
-                    for item in composants["name"] :
-                        nom_phonem = nom_phonem + item #.decode('Latin-1')
-                    
-                    # Ajouter le nom de la commune
-                    nom_phonem = nom_phonem +" "+commune
-                    
+                # Concaténer les éléments du nom
+                for item in composants["name"] :
                     # Encodage phonétique
+                    phonetique = mot.analyse( item.encode('utf-8') )
+                    nom_phonem = nom_phonem + phonetique 
+                
+                # Ajouter le nom de la commune
+                nom_phonem = nom_phonem + mot.analyse(commune.encode('utf-8'))
+                                    
+                # Poids
+                poids_p = pds.search(ligne[2],ligne[3])
+                
+                # -- Affiner la partie sémantique --
+                # tester le type et la classe de la ligne (table "place")
+                classe_place = ligne[2]
+                type_place = ligne[3]
+                
+                # type Station
+                if type_place=="station":
+                    type_ligne = "station"
+                elif type_place=="tram_stop" or type_place=="bus_stop" :
+                    type_ligne = "station"
+                elif classe_place=="railway" and type_place=="stop" :
+                    type_ligne = "station"
+                
+                # Composer la structure du résultat
+                resultat = {
+                    'nom' : nom_phonem,
+                    'osm_id' : str(ligne[4]),
+                    'poids' : str(poids_p),
+                    'ville' : commune,
+                    'type' : type_ligne
+                }
                     
-                    phonetique = mot.analyse( nom_phonem.encode('utf-8') )
-                                        
-                    # Poids
-                    poids_p = pds.search(ligne[2],ligne[3])
-                    
-                    # -- Affiner la partie sémantique --
-                    # tester le type et la classe de la ligne (table "place")
-                    classe_place = ligne[2]
-                    type_place = ligne[3]
-                    
-                    # type Station
-                    if type_place=="station":
-                        type_ligne = "station"
-                    elif type_place=="tram_stop" or type_place=="bus_stop" :
-                        type_ligne = "station"
-                    elif classe_place=="railway" and type_place=="stop" :
-                        type_ligne = "station"
-                    
-                    # Composer la structure du résultat
-                    resultat.append({
-                        'nom' : phonetique,
-                        'osm_id' : str(ligne[4]),
-                        'poids' : str(poids_p),
-                        'ville' : commune,
-                        'type' : type_ligne
-                    })
-                    
-        # Renvoyer le tableau de résultat
-        return resultat
+            # Renvoyer le tableau de résultat
+            return resultat
         
         
     def insertion(self, tableau):
@@ -213,13 +222,17 @@ class nominatim:
          On utilise les données du paramètre 'tableau'
         """
         
+        # Lire les lignes du tableau
+        lignes = [self.ecrire_ligne(ligne) for ligne in tableau[0]]
+            
+        self.conn.commit()
+        
+        
+    def ecrire_ligne(self, ligne ):
         # Créer un curseur
         curseur = self.conn.cursor()
-        
-        # Lire les lignes du tableau
-        for ligne in tableau :
-            # et créer un nouvel enregistrement dan la table "phonetique"
-            curseur.execute(
+        # Créer un nouvel enregistrement dan la table "phonetique"
+        curseur.execute(
                 "INSERT INTO phonetique(nom,osm_id,poids,ville,semantic) VALUES ( %s, %s, %s, %s, %s)",
                     (
                     ligne["nom"],
@@ -228,9 +241,9 @@ class nominatim:
                     ligne["ville"],
                     ligne["type"]
                     ) )
-        
-        self.conn.commit()
+                    
         curseur.close()
+        
         
     def requete(self, osmid ):
         request = """
