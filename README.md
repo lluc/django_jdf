@@ -102,7 +102,7 @@ Pour effacer la totalité des données contenues dans la table *phonetique*, ex�
 	python manage.py generation  --reset <user> <password> 62.210.146.189
 	
 #### Génération globale
-La génération globale concerne l'ensemble de la France métropolitaine. Elle s'effectue en utilisant l'identifiant *all* :
+La génération globale concerne l'ensemble des entités administratives de niveau 8 (*admin_level=8*), contenues dans la base Nominatim. Elle s'effectue en utilisant l'identifiant *all* :
 
 	python manage.py generation  <user> <password> 62.210.146.189 all
 
