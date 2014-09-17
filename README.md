@@ -83,6 +83,31 @@ Le fichier *prod_settings.py* pourrait être de la forme suivante :
 
 ## Fonctionnement
 
+### Génération
+La génération concerne la production de données, au sein de la base Nominatim, pour pouvoir, ensuite, effectuer des requêtes phonétiques et sémantiques.
+
+Cette génération d'effectue dans une console, sur le serveur.
+
+#### Génération d'une commune
+On récupére dans OpenStreetMap le numéro de la relation de la limite administraive de la commune.
+Par exemple, pour la ville de Tours, ce sera l'identifiant **76306**. Donc, pour effectuer la génération, on exécute la commande suivante ( en remplaçant les variables *<user>* et *<password>* ) :
+
+	python manage.py generation  <user> <password> 62.210.146.189 76306
+	
+On peut utiliser ce type de commande pour tout type d'entité administrative qui est identifiée dans OpenStreetMap par une relation (département, région, arrondissement, ... )
+	
+#### Effacement des données
+Pour effacer la totalité des données contenues dans la table *phonetique*, exécuter la commande suivante :
+
+	python manage.py generation  --reset <user> <password> 62.210.146.189
+	
+#### Génération globale
+La génération globale concerne l'ensemble des entités administratives de niveau 8 (*admin_level=8*), contenues dans la base Nominatim. Elle s'effectue en utilisant l'identifiant *all* :
+
+	python manage.py generation  <user> <password> 62.210.146.189 all
+
+	
+
 ### Requêtage
 On utilise la biliothèque *Django Rest Framework* ( [site](http://www.django-rest-framework.org/) ). 
 Les sources de requêtages se trouvent dans le répertoire qui gère l'API : *jdf_api*
