@@ -203,14 +203,8 @@ class nominatim:
                     type_ligne = "station"
                 
                 # Composer la structure du résultat
-                resultat = {
-                    'nom' : nom_phonem,
-                    'osm_id' : str(ligne[4]),
-                    'poids' : str(poids_p),
-                    'ville' : commune,
-                    'type' : type_ligne
-                }
-                    
+                resultat = [nom_phonem, str(ligne[4]),
+                    str(poids_p), commune, type_ligne]
             # Renvoyer le tableau de résultat
             return resultat
         
@@ -221,28 +215,17 @@ class nominatim:
          
          On utilise les données du paramètre 'tableau'
         """
-        
-        # Lire les lignes du tableau
-        lignes = [self.ecrire_ligne(ligne) for ligne in tableau[0]]
-            
-        self.conn.commit()
-        
-        
-    def ecrire_ligne(self, ligne ):
         # Créer un curseur
         curseur = self.conn.cursor()
-        # Créer un nouvel enregistrement dan la table "phonetique"
-        curseur.execute(
-                "INSERT INTO phonetique(nom,osm_id,poids,ville,semantic) VALUES ( %s, %s, %s, %s, %s)",
-                    (
-                    ligne["nom"],
-                    ligne["osm_id"],
-                    ligne["poids"],
-                    ligne["ville"],
-                    ligne["type"]
-                    ) )
-                    
+        
+        # Lire les lignes du tableau
+        args_str = ','.join(curseur.mogrify("(%s,%s,%s,%s,%s)", ligne) for ligne in tableau[0])
+        # Exécuter les insertions multiples en rafale
+        curseur.execute("INSERT INTO phonetique (nom,osm_id,poids,ville,semantic) VALUES "+args_str)
+        
         curseur.close()
+        self.conn.commit()
+        
         
         
     def requete(self, osmid ):
