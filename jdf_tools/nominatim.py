@@ -254,17 +254,11 @@ class nominatim:
           place.type, 
           place.osm_id
          FROM 
-          public.place
+          public.place, public.place AS place2 
          WHERE
           place.name->'name' LIKE '%' AND
-          ST_Contains( (
-            SELECT
-                place2.geometry
-            FROM
-                public.place AS place2
-            WHERE
-                place2.osm_id = {osm_id} AND
-                place2.osm_type LIKE 'R'), public.place.geometry )
+          place2.osm_id = {osm_id} AND place2.osm_type LIKE 'R'
+          AND ST_Contains(place2.geometry, public.place.geometry)
         """.format(osm_id = osmid)
         return request
         
