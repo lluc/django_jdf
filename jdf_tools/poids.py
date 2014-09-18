@@ -43,5 +43,5 @@ if __name__ == '__main__':
     print p.search("highway","path")
     print p.search("highway","track")
     print p.search("highway","toto")
-    
+    print p.search("place","town")
     

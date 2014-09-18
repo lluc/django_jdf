@@ -128,6 +128,7 @@ def search_place_name(request, place_name,option_strict=0):
                 ph.nom SIMILAR TO '%s' AND 
                 pl.osm_id = ph.osm_id AND
                 ph.semantic SIMILAR TO '%s' %s
+            ORDER BY ph.poids 
             LIMIT 20
             """
             # Fomatting the request
