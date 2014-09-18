@@ -70,7 +70,8 @@ class nominatim:
         res = self.traitement(cur, commune[1])
         
         #for ligne in res :
-        #    f.write(str(ligne)+"\n")
+        #   f.write(str(ligne)+"\n")
+        
         # Ecriture dans la base de données
         self.insertion( res )
     
@@ -174,6 +175,7 @@ class nominatim:
             
             # S'il existe un composant ...
             if composants:
+               
                 # Affectation par défaut du type
                 type_ligne = composants["type"]
                 
@@ -217,9 +219,10 @@ class nominatim:
         """
         # Créer un curseur
         curseur = self.conn.cursor()
-        
+ 
         # Lire les lignes du tableau
         args_str = ','.join(curseur.mogrify("(%s,%s,%s,%s,%s)", ligne) for ligne in tableau[0])
+
         # Exécuter les insertions multiples en rafale
         curseur.execute("INSERT INTO phonetique (nom,osm_id,poids,ville,semantic) VALUES "+args_str)
         
@@ -239,7 +242,7 @@ class nominatim:
          FROM 
           public.place, public.place AS place2 
          WHERE
-          place.name->'name' LIKE '%' AND
+          place.name->'name' NOT LIKE '' AND
           place2.osm_id = {osm_id} AND place2.osm_type LIKE 'R'
           AND ST_Contains(place2.geometry, public.place.geometry)
         """.format(osm_id = osmid)
