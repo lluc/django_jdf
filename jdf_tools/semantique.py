@@ -28,6 +28,7 @@ class semantic :
                         "l",
                         "la",
                         "le",
+                        "les",
                         "du",
                         "des",
                         "un"]
@@ -116,7 +117,13 @@ class semantic :
             
             return resaddress
         
-        return self.parserDefault( sentence )
+        # Default pattern/type
+        resDefault = self.parserDefault(sentence)
+        # Convert the numbers
+        resDefault["name"] = self.addressToLetters( resDefault["name"] )
+        
+        return resDefault
+        
         
     def addressToLetters(self, address) :
         """
@@ -127,6 +134,7 @@ class semantic :
             if address[i].isdigit()==True :
                 address[i] = n.convNumber2letter(int(address[i])).lower()
         return address
+        
         
     def parserDefault(self,sentence) :
         """
@@ -296,6 +304,6 @@ if __name__ == '__main__':
     print s.analyze( "charles lindbergh")
     print s.analyze( "l'heure tranquille")
     print s.analyze( "rue du 11 novembre")
- 
+    print s.analyze( "les 2 lions")
     
 
