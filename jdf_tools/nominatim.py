@@ -72,8 +72,10 @@ class nominatim:
         #for ligne in res :
         #   f.write(str(ligne)+"\n")
         
-        # Ecriture dans la base de données
-        self.insertion( res )
+        # Tester si la commune contient des éléments nommés.
+        if len(res[0])>=1 :
+            # Ecriture dans la base de données
+            self.insertion( res )
     
     
     def collect_communes(self, osmid):
