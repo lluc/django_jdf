@@ -19,6 +19,18 @@ class semantic :
             # ... or to generate the data
             self.alphas_fr = pp.alphas+'éèëêàâûôÉÈËÊçîù0123456789'
     
+    def frenchLetters(self,sentence):
+        """
+        Convert specials french letters to standards letters
+        """
+        sentence = re.sub(ur'â','a',sentence)
+        sentence = re.sub(ur'ê','e',sentence)
+        sentence = re.sub(ur'É','e',sentence)
+        sentence = re.sub(ur'î','i',sentence)
+        sentence = re.sub(ur'Î','i',sentence)
+        sentence = re.sub(ur'ù','u',sentence)
+        return sentence
+    
     def shortWords(self,sentence) :
         """
         Delete "short words"
@@ -93,6 +105,7 @@ class semantic :
         """
         
         sentence = self.abbreviation( sentence )
+        sentence = self.frenchLetters( sentence )
         sentence = self.shortWords( sentence )
 
 
@@ -305,5 +318,7 @@ if __name__ == '__main__':
     print s.analyze( "l'heure tranquille")
     print s.analyze( "rue du 11 novembre")
     print s.analyze( "les 2 lions")
+    print s.analyze( u"île simon")
+    print s.analyze( u"ile simon")
     
 
