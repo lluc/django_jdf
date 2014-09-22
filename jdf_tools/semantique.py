@@ -181,7 +181,7 @@ class semantic :
             "carrefour",
             "cours",
             "mail",
-            "allée",
+            u"allée",
             "promenade",
             "chemin",
             "voie",
@@ -320,5 +320,5 @@ if __name__ == '__main__':
     print s.analyze( "les 2 lions")
     print s.analyze( u"île simon")
     print s.analyze( u"ile simon")
-    
+    print s.analyze( u"allée des érables")
 
