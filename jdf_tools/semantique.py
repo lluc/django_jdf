@@ -163,7 +163,7 @@ class semantic :
         
         # Slice the sentence
         jetons = defaut.parseString( sentence )
-        result["name"] = jetons[0]
+        result["name"] = [ i for i in jetons[0] ]
         result["cp"] = jetons[1]
         result["town"] = jetons[2]
         result["type"] = "poi"
@@ -212,9 +212,9 @@ class semantic :
             # Detect if sentence is matching address pattern
             #  (only numbered adress. Ex = 1 )
             tokens = address.parseString( sentence )
-            result["number"] = tokens[0]
+            result["number"] = [ i for i in tokens[0] ]
             result["way"] = tokens[1]
-            result["name"] = tokens[2]
+            result["name"] = [ i for i in tokens[2] ]
             result["cp"] = tokens[3]
             result["town"] = tokens[4]
             result["type"] ="address"
@@ -223,9 +223,9 @@ class semantic :
                 # Detect if sentence is matching address2 pattern
                 #  (number followed by a letter. Ex = 1B )
                 tokens = address2.parseString( sentence )
-                result["number"] = tokens[0]
+                result["number"] = [ i for i in tokens[0] ]
                 result["way"] = tokens[1]
-                result["name"] = tokens[2]
+                result["name"] = [ i for i in tokens[2] ]
                 result["cp"] = tokens[3]
                 result["town"] = tokens[4]
                 result["type"] ="address"
@@ -267,7 +267,7 @@ class semantic :
             tokens = station.parseString( sentence )
             test_station = True
             result["station"] = tokens[0]
-            result["name"] = tokens[1]
+            result["name"] = [ i for i in tokens[1] ]
             result["cp"] = tokens[2]
             result["town"] = tokens[3]
             result["type"] ="station"
@@ -281,9 +281,38 @@ class semantic :
             result["type"] = ""
             
         return result
+    
+    
+#------------------
+#    T E S T S
+#------------------
+def test_addressToLetters():
+    s = semantic()
+    assert s.addressToLetters(["6","juin"]) == ['six ','juin']
+    assert s.addressToLetters(["11","novembre"]) == ['onze ','novembre']
+    
+    
+def test_frenchLetters() :
+    s = semantic()
+    assert s.frenchLetters(u"â") == 'a'
+    assert s.frenchLetters(u"ê") == 'e'
+    assert s.frenchLetters(u"É") == 'e'
+    assert s.frenchLetters(u"î") == 'i'
+    assert s.frenchLetters(u"Î") == 'i'
+    assert s.frenchLetters(u"ù") == 'u'
 
-
-
+def test_analyze() :
+    s = semantic()
+    assert s.analyze("r") == {'town': '', 'cp': '', 'type': 'poi', 'name': ['r']}
+    assert s.analyze( "Av. du Gal De Gaulle" ) == {'town': '', 'name': [u'g\xe9n\xe9ral', u'gaulle'], 'number': ['#', '#'], 'way': u'avenue', 'cp': '', 'type': 'address'}
+    assert s.analyze( "57 ter rue de la gare 37000 TOURS" ) == {'cp': '', 'name': ['gare', 'trente sept mille ', 'tours'], 'number': ['57', 'ter'], 'town': '', 'way':'rue', 'type':'address'}
+    assert s.analyze( "Station de captage d'eau potable" ) == {'town': '', 'cp': '', 'type': 'poi', 'name': ['station', 'captage', 'eau', 'potable']}
+    assert s.analyze( "les 2 lions") == {'town': '', 'cp': '', 'type': 'poi', 'name': ['deux ', 'lions']}
+    assert s.analyze( "gare de tours" ) == {'cp': '', 'town': '', 'station': 'gare', 'type': 'station', 'name': ['tours']}
+    assert s.analyze( "Gare Montparnasse, Paris") == {'cp': '', 'town': 'paris', 'station': 'gare', 'type': 'station', 'name': ['montparnasse']}
+    assert s.analyze( "l'heure tranquille") == {'town': '', 'cp': '', 'type': 'poi', 'name': ['heure', 'tranquille']}
+    assert s.analyze( u"allée des érables") == {'town': '', 'name': [u'\xe9rables'], 'number': ['#', '#'], 'way': u'all\xe9e', 'cp': '', 'type': 'address'}
+    
 if __name__ == '__main__':
     s = semantic()
 
@@ -306,7 +335,7 @@ if __name__ == '__main__':
     print s.analyze( "Gare Montparnasse")
     print s.analyze( "Gare Montparnasse, Paris")
     print s.analyze( "clos" )
-    print s.analyze( "allée hector" )
+    print s.analyze( u"allée hector" )
     print s.analyze( "Jules Verne" )
     print s.analyze( "Jules Verne, nantes" )
     print s.analyze( "Station de captage d'eau potable" )
@@ -321,4 +350,4 @@ if __name__ == '__main__':
     print s.analyze( u"île simon")
     print s.analyze( u"ile simon")
     print s.analyze( u"allée des érables")
-
+    
