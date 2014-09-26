@@ -1,6 +1,7 @@
 place,city,0    
 place,town,1
 place,suburb,2
+railway,station,2
 place,quarter,2
 place,village,3
 place,hamlet,3
