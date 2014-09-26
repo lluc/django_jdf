@@ -108,7 +108,7 @@ def search_place_name(request, place_name,option_strict=0):
             # Specializing semantic search
             final_semantic = components["type"]
             if components["type"]== 'poi' :
-                final_semantic = "(poi|address)"
+                final_semantic = "(poi|address|station)"
             
             # Filtering
             request_sql = """
