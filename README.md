@@ -21,7 +21,7 @@ The name "Jour de Fête" ( aka JDF in this module) comes from a french film of J
 
 Le projet, volontairement, ne prend en charge que le français et la formalisation française des adresses. Pour des moteurs de recherche d'adresses sur des territoires plus vastes, il vaut mieux regarder vers des solutions telles que *[Photon](https://github.com/komoot/photon/)*. (bien que ce dernier soit en Java et non en Python)
 
-Bien que pouvant couvrir la France entière, *Django_jdf* est plutôt destiné à une structure désirant utiliser un géocodeur, ou une recherche d'adresse avec auto-complétion, sur un territoire donné (ex: Département, communauté de communes, commune, ... )
+Bien que développé pour pouvoir couvrir un petit territoire désirant utiliser un géocodeur, ou une recherche d'adresse avec auto-complétion, (ex: Département, communauté de communes, commune, ... ), *Django_jdf* peut sans problème servir de moteur de recherche d'adresse sur la France entière.
 
 ## Architecture
 
