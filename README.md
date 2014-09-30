@@ -25,7 +25,7 @@ Bien que développé pour pouvoir couvrir un petit territoire désirant utiliser
 
 ## Architecture
 
-La base *Nominatim* n'est pas altérée. On lui adjoint seulement une table *phonetique*. Celle-ci sert à stocker une chaine phonétique (calculé par un SoundEx personnalisé) et un "poids" qui permet de hiérarchiser l'affichage des réponses.
+La base *Nominatim* n'est pas altérée. On lui adjoint seulement une table *phonetique*. Celle-ci sert à stocker une chaine phonétique (calculé par un SoundEx personnalisé : https://github.com/lluc/python_soundex_fr ) et un "poids" qui permet de hiérarchiser l'affichage des réponses.
 
 Lors d'une recherche, *Django_jdf* renvoie une réponse au format JSON. C'est cette réponse qui pourra être utilisée dans une saisie avec auto-complétion.
 
