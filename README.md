@@ -114,7 +114,27 @@ Les sources de requêtages se trouvent dans le répertoire qui gère l'API : *jd
 
 C'est le fichier *views.py* qui contient les requêtes à la base de données.
 
+#### Chercher phonétiquement une localisation ( *places/search/* )
 
+Cet appel peut-être effectué par tout logiciel client sous la forme suivante :
+
+	http://jdf.geovelo.fr/api/places/search/%QUERY/?format=json
+
+***%QUERY*** : requête de localisation. Par exemple :*"rue de la vallée*"
+
+options :
+
++  *format=json* : retourne le résultat au format JSON.
+
+
+
+Fonction utilisée dans le source :
+
+	def search_place_name(request, place_name,option_strict=0):
+
+**place_name** : nom de la localisation à rechercher. Cela peut être une adresse, un arrêt de bus, un point d'intérêt, ... Elle peut être de la forme *"rue de la vallée"*, *"Le Mans"* ou bien *"Gare Montparnasse"*
+
+**option_strict** : lorsqu'il est à 1, on ne prend en compte que les poids strictement inférieurs à 100. C'est-à-dire qu'on ne prend en compte que les éléments dont il est fait mention dans le fichier *weight.csv*.
 
 
 
