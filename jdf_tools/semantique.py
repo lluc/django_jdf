@@ -35,9 +35,7 @@ class semantic :
         """
         Delete "short words"
         """
-        list_words = [ "de",
-                        "d",
-                        "l",
+        list_words = [  "l",
                         "la",
                         "le",
                         "les",
@@ -47,8 +45,9 @@ class semantic :
                         
         for word in list_words :
             sentence = re.sub(r'\b'+word+'\s+',' ',sentence)
-            
+        
         return sentence
+    
     
     def abbreviation(self, sentence) :
         """
@@ -116,8 +115,8 @@ class semantic :
         if resStation["name"] != "" :
             # It's a station
             
-            # Convert the numbers
-            resStation["name"] =self.addressToLetters( resStation["name"] )
+            # Post-processing
+            resStation["name"] =self.postProcessName( resStation["name"] )
             
             return resStation
         
@@ -125,17 +124,35 @@ class semantic :
         if resaddress["name"] != "" :
             # It's an  address
             
-            # Convert the numbers
-            resaddress["name"] = self.addressToLetters( resaddress["name"] )
+            # Post-processing
+            resaddress["name"] = self.postProcessName( resaddress["name"] )
             
             return resaddress
         
         # Default pattern/type
         resDefault = self.parserDefault(sentence)
-        # Convert the numbers
-        resDefault["name"] = self.addressToLetters( resDefault["name"] )
+        
+        # Post-processing
+        resDefault["name"] = self.postProcessName( resDefault["name"] )
         
         return resDefault
+        
+    
+    def postProcessName(self, words):
+        # Convert the numbers
+        words =self.addressToLetters( words )
+        
+        # Delete all the "d'" and "de" that they 
+        #  are not of the name
+        list_words = [  "de",
+                        "du",
+                        "des",
+                        "d"]
+
+        if words[0] in list_words :
+            del words[0]
+
+        return words
         
         
     def addressToLetters(self, address) :
@@ -304,9 +321,9 @@ def test_frenchLetters() :
 def test_analyze() :
     s = semantic()
     assert s.analyze("r") == {'town': '', 'cp': '', 'type': 'poi', 'name': ['r']}
-    assert s.analyze( "Av. du Gal De Gaulle" ) == {'town': '', 'name': [u'g\xe9n\xe9ral', u'gaulle'], 'number': ['#', '#'], 'way': u'avenue', 'cp': '', 'type': 'address'}
+    assert s.analyze( "Av. du Gal De Gaulle" ) == {'town': '', 'name': [u'g\xe9n\xe9ral',u'de', u'gaulle'], 'number': ['#', '#'], 'way': u'avenue', 'cp': '', 'type': 'address'}
     assert s.analyze( "57 ter rue de la gare 37000 TOURS" ) == {'cp': '', 'name': ['gare', 'trente sept mille ', 'tours'], 'number': ['57', 'ter'], 'town': '', 'way':'rue', 'type':'address'}
-    assert s.analyze( "Station de captage d'eau potable" ) == {'town': '', 'cp': '', 'type': 'poi', 'name': ['station', 'captage', 'eau', 'potable']}
+    assert s.analyze( "Station de captage d'eau potable" ) == {'town': '', 'cp': '', 'type': 'poi', 'name': ['station','de', 'captage','d', 'eau', 'potable']}
     assert s.analyze( "les 2 lions") == {'town': '', 'cp': '', 'type': 'poi', 'name': ['deux ', 'lions']}
     assert s.analyze( "gare de tours" ) == {'cp': '', 'town': '', 'station': 'gare', 'type': 'station', 'name': ['tours']}
     assert s.analyze( "Gare Montparnasse, Paris") == {'cp': '', 'town': 'paris', 'station': 'gare', 'type': 'station', 'name': ['montparnasse']}
