@@ -246,6 +246,8 @@ class nominatim:
          WHERE
           place.name->'name' NOT LIKE '' AND
           place2.osm_id = {osm_id} AND place2.osm_type LIKE 'R'
+          AND ST_IsEmpty(place2.geometry) = False
+          AND ST_IsEmpty(place.geometry) = False
           AND ST_Contains(place2.geometry, public.place.geometry)
         """.format(osm_id = osmid)
         return request
