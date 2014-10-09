@@ -148,9 +148,9 @@ class semantic :
                         "du",
                         "des",
                         "d"]
-
-        if words[0] in list_words :
-            del words[0]
+        if len(words)>=1 :
+            if words[0] in list_words :
+                del words[0]    
 
         return words
         
@@ -329,6 +329,10 @@ def test_analyze() :
     assert s.analyze( "Gare Montparnasse, Paris") == {'cp': '', 'town': 'paris', 'station': 'gare', 'type': 'station', 'name': ['montparnasse']}
     assert s.analyze( "l'heure tranquille") == {'town': '', 'cp': '', 'type': 'poi', 'name': ['heure', 'tranquille']}
     assert s.analyze( u"allée des érables") == {'town': '', 'name': [u'\xe9rables'], 'number': ['#', '#'], 'way': u'all\xe9e', 'cp': '', 'type': 'address'}
+    
+def test_postProcessName() :
+    s = semantic()
+    assert s.postProcessName([]) == []
     
 if __name__ == '__main__':
     s = semantic()
