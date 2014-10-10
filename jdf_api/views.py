@@ -113,23 +113,27 @@ def search_place_name(request, place_name,option_strict=0):
             # Filtering
             request_sql = """
             SELECT
-                ph.nom, 
-                ph.poids, 
-                pl.class, 
-                pl.type, 
-                ph.ville, 
-                ph.semantic, 
-                pl.name->'name' AS libelle,
-                ST_Box2D(pl.geometry)
-            FROM 
-                phonetique AS ph,
-                place AS pl 
-            WHERE 
-                ph.nom SIMILAR TO '%s' AND 
-                pl.osm_id = ph.osm_id AND
-                ph.semantic SIMILAR TO '%s' %s
-            ORDER BY ph.poids 
-            LIMIT 20
+                * FROM
+                ( SELECT DISTINCT ON (libelle, class)* 
+                FROM 
+                ( 
+                    SELECT 
+                        ph.nom, 
+                        ph.poids, 
+                        pl.class, 
+                        pl.type, 
+                        ph.ville, 
+                        ph.semantic, 
+                        concat(pl.name->'name', ', ', ph.ville) 
+                            AS libelle, ST_Box2D(pl.geometry) 
+                        FROM phonetique AS ph, place AS pl 
+                        WHERE 
+                            ph.nom SIMILAR TO '%s' 
+                            AND pl.osm_id = ph.osm_id 
+                            AND ph.semantic SIMILAR TO '%s' %s
+                            ORDER BY poids LIMIT 50)
+                AS SUBREQUEST) 
+            AS SUBREQUEST2 ORDER BY poids, char_length(libelle) LIMIT 7
             """
             # Fomatting the request
             request_sql = request_sql.replace("\n","")
