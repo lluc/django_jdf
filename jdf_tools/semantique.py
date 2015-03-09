@@ -55,7 +55,7 @@ class semantic :
         """
         
         # Replace symbols
-        for w in ['-',';',':','\'','.'] :
+        for w in ['-',';',':','\'','.',','] :
             sentence = sentence.replace(w,' ')
         
         # Lower letters
